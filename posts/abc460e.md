@@ -1,6 +1,6 @@
 ---
 title: ABC460_E题解
-date: 2026-08-13
+date: 2026-08-12
 tags: [题解]
 description: 神秘数论
 ---
