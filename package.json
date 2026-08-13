@@ -1,0 +1,27 @@
+{
+  "name": "blog",
+  "version": "1.0.0",
+  "description": "A clean personal blog built with Node.js + vanilla HTML/CSS/JS, rendering Markdown posts.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "blog",
+    "nodejs",
+    "markdown"
+  ],
+  "author": "",
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "express": "^5.2.1",
+    "gray-matter": "^4.0.3",
+    "highlight.js": "^11.12.0",
+    "katex": "^0.17.0",
+    "marked": "^18.0.9",
+    "marked-highlight": "^2.2.4",
+    "marked-katex-extension": "^5.1.10"
+  }
+}
