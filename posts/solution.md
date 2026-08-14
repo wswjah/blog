@@ -1,12 +1,9 @@
 ---
 title: SZTU_ACM新生夏令营第五次训练赛题解
 date: 2026-08-13
-tags: [题解]
+tags: [题解，夏令营]
 description: SZTU_ACM新生夏令营第五次训练赛题解
-
 ---
-
-#  SZTU_ACM新生夏令营第五次训练赛题解
 
 ## 第一题：Five Antennas（ABC123 A）
 
@@ -237,6 +234,51 @@ int main() {
 ### 注意
 
 - `next_permutation` 函数用于生成下一个全排列。
+
+### 解法二
+
+当然了，如果你不知道next_permutation函数，还有另一种思路：
+
+已知：每道菜需要的时间是 **$\lceil \frac{t}{10} \rceil \times 10 $**，相当于时间在个位数进行四舍五入（109变成110，101也变成110）。从贪心的角度，每道菜浪费的时间是 $\lceil \frac{t}{10} \rceil \times 10 - t = 10 - t \% 10 $ 。我们希望总的浪费的时间最小，那就可以按个位数从小到大排序。注意：十的倍数不应排在第一个，因为它相当于浪费了十分钟 ( $ 0 \equiv 10 \pmod{10} $ )。如果放在最后会损失一点时间。
+
+那怎么按个位数从小到大排序呢？欸~写个结构体封装一下。
+
+参考代码如下：
+
+```cpp
+#include <iostream>
+#include <algorithm>
+#include <string>
+#include <vector>
+#include <map>
+#include <queue>
+using namespace std;
+
+// AT ABC123 B?LANG=EN
+// https://atcoder.jp/contests/abc123/tasks/abc123_b?lang=en
+struct dish {
+    int time;
+    bool operator<(const dish &d) const {
+        if (time % 10 == 0) return false;
+        return time % 10 < d.time % 10;
+    }
+} a[5];
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    cout.tie(0);
+    for (auto &i : a) {
+        cin >> i.time;
+    }
+    sort(a, a + 5);
+    int ans = a[0].time;
+    for (int i = 1; i < 5; i++) {
+        ans += (a[i].time + 9) / 10 * 10;
+    }
+    cout << ans << endl;
+    return 0;
+}
+```
 
 ## 第四题：At Most 3 (Judge ver.)（ABC251 B）
 

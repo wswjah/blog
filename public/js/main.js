@@ -54,6 +54,60 @@
     return postsCache;
   }
 
+  async function copyText(text) {
+    // 安全上下文（HTTPS / localhost）下用 Clipboard API
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      return;
+    }
+    // 非安全上下文（如局域网 IP 访问）回退到 execCommand
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.top = '0';
+    ta.style.left = '0';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    if (!ok) throw new Error('copy failed');
+  }
+
+  function enhanceCodeBlocks(container) {
+    container.querySelectorAll('.prose pre').forEach((pre) => {
+      if (pre.querySelector('.copy-btn')) return;
+
+      const code = pre.querySelector('code');
+      if (!code) return;
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'copy-btn';
+      btn.textContent = '复制';
+      btn.setAttribute('aria-label', '复制代码');
+
+      btn.addEventListener('click', async () => {
+        try {
+          await copyText(code.textContent);
+          btn.textContent = '已复制';
+          btn.classList.add('is-copied');
+        } catch {
+          btn.textContent = '复制失败';
+          btn.classList.add('is-error');
+        }
+        setTimeout(() => {
+          btn.textContent = '复制';
+          btn.classList.remove('is-copied', 'is-error');
+        }, 1600);
+      });
+
+      pre.classList.add('has-copy');
+      pre.appendChild(btn);
+    });
+  }
+
   function renderState(eyebrow, title, desc, extra = '') {
     app.innerHTML = `
       <section class="state-panel">
@@ -178,6 +232,8 @@
           </header>
           <div class="prose">${post.html}</div>
         </article>`;
+
+      enhanceCodeBlocks(app);
     } catch (err) {
       renderState(
         '404',

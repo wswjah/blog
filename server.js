@@ -124,6 +124,10 @@ app.get('/api/posts/:slug', (req, res) => {
   res.json(post);
 });
 
+app.get('/9e8825c4b696dec18a4f7d41cf3118bd.txt', (req, res) => {
+  res.type('text/plain').send('536ccf00837755aa4dfcdb9785fe24f453de9df6');
+});
+
 // --- Static frontend ---
 
 app.use(express.static(PUBLIC_DIR));
