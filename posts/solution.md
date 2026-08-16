@@ -77,6 +77,25 @@ int main() {
 }
 ```
 
+### 参考代码（C）
+
+```c
+#include <stdio.h>
+
+int a, b, c, d, e, k;
+
+int main() {
+    scanf("%d %d %d %d %d %d", &a, &b, &c, &d, &e, &k);
+
+    if (e - a > k) {
+        printf(":(\n");
+    } else {
+        printf("Yay!\n");
+    }
+    
+    return 0;
+}
+```
 
 ## 第二题：321-like Checker（ABC321 A）
 
@@ -147,6 +166,28 @@ int main() {
 }
 ```
 
+### 参考代码(C)
+```c
+#include <stdio.h>
+#include <string.h>
+
+char s[100];
+
+int main() {
+    scanf("%s", s);
+    int len = strlen(s);
+    
+    for (int i = 0; i < len - 1; i++) {
+        if (s[i] <= s[i + 1]) {
+            printf("No\n");
+            return 0;
+        }
+    }
+    
+    printf("Yes\n");
+    return 0;
+}
+```
 
 ## 第三题：Five Dishes（ABC123 B）
 
@@ -235,6 +276,45 @@ int main() {
 
 - `next_permutation` 函数用于生成下一个全排列。
 
+### 参考代码（C）
+```c
+#include <stdio.h>
+#include <limits.h>
+
+int t[5];
+int order[5];
+int used[5];
+int ans = INT_MAX;
+
+void dfs(int pos) {
+    if (pos == 5) {
+        int cur = 0;
+        for (int i = 0; i < 5; i++) {
+            int idx = order[i];
+            int order_time = (cur + 9) / 10 * 10; // 向上取整到10的倍数
+            cur = order_time + t[idx];
+        }
+        if (cur < ans) ans = cur;
+        return;
+    }
+    for (int i = 0; i < 5; i++) {
+        if (!used[i]) {
+            used[i] = 1;
+            order[pos] = i;
+            dfs(pos + 1);
+            used[i] = 0;
+        }
+    }
+}
+
+int main() {
+    for (int i = 0; i < 5; i++) scanf("%d", &t[i]);
+    dfs(0);
+    printf("%d\n", ans);
+    return 0;
+}
+```
+
 ### 解法二
 
 当然了，如果你不知道next_permutation函数，还有另一种思路：
@@ -243,7 +323,7 @@ int main() {
 
 那怎么按个位数从小到大排序呢？欸~写个结构体封装一下。
 
-参考代码如下：
+### 参考代码如下：
 
 ```cpp
 #include <iostream>
@@ -279,7 +359,37 @@ int main() {
     return 0;
 }
 ```
+### 参考代码(C)
+```c
+#include <stdio.h>
+#include <stdlib.h>
 
+struct dish {
+    int time;
+};
+
+int cmp(const void *a, const void *b) {
+    struct dish *da = (struct dish *)a;
+    struct dish *db = (struct dish *)b;
+    int ra = da->time % 10;
+    int rb = db->time % 10;
+    if (ra == 0) return 1;      // 10的倍数放后面
+    if (rb == 0) return -1;
+    return ra - rb;
+}
+
+int main() {
+    struct dish a[5];
+    for (int i = 0; i < 5; i++) scanf("%d", &a[i].time);
+    qsort(a, 5, sizeof(struct dish), cmp);
+    int ans = a[0].time;
+    for (int i = 1; i < 5; i++) {
+        ans += (a[i].time + 9) / 10 * 10;
+    }
+    printf("%d\n", ans);
+    return 0;
+}
+```
 ## 第四题：At Most 3 (Judge ver.)（ABC251 B）
 
 ### 题面
@@ -375,6 +485,52 @@ int main() {
 }
 ```
 
+### 参考代码(C)
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+
+#define MAX_W 1000005
+
+int N, W;
+int A[305];
+bool good[MAX_W];
+
+int main() {
+    scanf("%d %d", &N, &W);
+    for (int i = 0; i < N; i++) scanf("%d", &A[i]);
+
+    // 选 1 个
+    for (int i = 0; i < N; i++) {
+        if (A[i] <= W) good[A[i]] = true;
+    }
+    // 选 2 个
+    for (int i = 0; i < N; i++) {
+        for (int j = i + 1; j < N; j++) {
+            int sum = A[i] + A[j];
+            if (sum <= W) good[sum] = true;
+        }
+    }
+    // 选 3 个
+    for (int i = 0; i < N; i++) {
+        for (int j = i + 1; j < N; j++) {
+            for (int k = j + 1; k < N; k++) {
+                int sum = A[i] + A[j] + A[k];
+                if (sum <= W) good[sum] = true;
+            }
+        }
+    }
+    
+    int ans = 0;
+    for (int i = 1; i <= W; i++) {
+        if (good[i]) ans++;
+    }
+    printf("%d\n", ans);
+    return 0;
+}
+```
 ## 第五题： Sushi (ABC460_C)
 
 ### 题面
@@ -434,7 +590,42 @@ int main() {
     return 0;
 }
 ```
+### 参考代码（C）
+```c
+#include <stdio.h>
+#include <stdlib.h>
 
+int cmp(const void *a, const void *b) {
+    long long x = *(long long *)a;
+    long long y = *(long long *)b;
+    if (x < y) return -1;
+    if (x > y) return 1;
+    return 0;
+}
+
+int n, m;
+long long a[200005], b[200005];
+
+int main() {
+    scanf("%d %d", &n, &m);
+    for (int i = 0; i < n; i++) scanf("%lld", &a[i]);
+    for (int i = 0; i < m; i++) scanf("%lld", &b[i]);
+    qsort(a, n, sizeof(long long), cmp);
+    qsort(b, m, sizeof(long long), cmp);
+    int i = 0, j = 0, ans = 0;
+    while (i < n && j < m) {
+        if (b[j] <= a[i] * 2) {
+            ans++;
+            i++;
+            j++;
+        } else {
+            i++;
+        }
+    }
+    printf("%d\n", ans);
+    return 0;
+}
+```
 ## 第六题：Dice Sum（ABC248 C）
 
 ### 题面
@@ -555,6 +746,47 @@ int main() {
 - 内层循环中，由于 k 从 1 递增，一旦 `j + k > K` 就可以直接 `break`，因为后面的 k 更大。
 - 每次累加后立即取模，避免整数溢出。
 - 最终答案统计 `dp[N][1]` 到 `dp[N][K]` 的总和。
+
+### 参考代码（C）
+```c
+#include <stdio.h>
+#include <string.h>
+
+#define MOD 998244353
+#define MAXN 55
+#define MAXK 2505
+
+int N, M, K;
+int dp[MAXN][MAXK];
+
+int main() {
+    scanf("%d %d %d", &N, &M, &K);
+    memset(dp, 0, sizeof(dp));
+    dp[0][0] = 1;
+
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j <= K; j++) {
+            if (dp[i][j] == 0) continue;
+            for (int k = 1; k <= M; k++) {
+                if (j + k > K) break;
+                dp[i + 1][j + k] += dp[i][j];
+                if (dp[i + 1][j + k] >= MOD) {
+                    dp[i + 1][j + k] -= MOD;
+                }
+            }
+        }
+    }
+
+    int ans = 0;
+    for (int j = 1; j <= K; j++) {
+        ans += dp[N][j];
+        if (ans >= MOD) ans -= MOD;
+    }
+
+    printf("%d\n", ans);
+    return 0;
+}
+```
 
 ## 第七题 Repeatedly Repainting (ABC460_D)
 
@@ -721,6 +953,125 @@ int main() {
 
 ```
 
+### 参考代码（C）
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+#define MAXN 1000005
+
+int h, w, cnt;
+int dx[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
+int dy[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
+
+char **a, **c;
+int **b;
+int qx[MAXN], qy[MAXN];
+int head, tail;
+
+int main() {
+    scanf("%d %d", &h, &w);
+    a = (char **)malloc((h + 1) * sizeof(char *));
+    c = (char **)malloc((h + 1) * sizeof(char *));
+    b = (int **)malloc((h + 1) * sizeof(int *));
+    char *buf = (char *)malloc((w + 1) * sizeof(char)); // 临时缓冲区
+
+    for (int i = 1; i <= h; i++) {
+        a[i] = (char *)malloc((w + 2) * sizeof(char));
+        c[i] = (char *)malloc((w + 2) * sizeof(char));
+        b[i] = (int *)malloc((w + 1) * sizeof(int));
+        scanf("%s", buf);
+        for (int j = 1; j <= w; j++) {
+            a[i][j] = buf[j - 1];
+            if (a[i][j] == '#') cnt++;
+            b[i][j] = -1;
+        }
+    }
+    free(buf);
+
+    if (cnt == 0 || cnt == h * w) {
+        for (int i = 1; i <= h; i++) {
+            for (int j = 1; j <= w; j++) putchar('.');
+            putchar('\n');
+        }
+        return 0;
+    }
+
+    // 判断黑色点是否可以扩散出去
+    for (int i = 1; i <= h; i++) {
+        for (int j = 1; j <= w; j++) {
+            if (a[i][j] == '#') {
+                bool flag = false;
+                for (int k = 0; k < 8; k++) {
+                    int nx = i + dx[k], ny = j + dy[k];
+                    if (nx < 1 || nx > h || ny < 1 || ny > w) continue;
+                    if (a[nx][ny] == '.') {
+                        flag = true;
+                        break;
+                    }
+                }
+                c[i][j] = flag ? '#' : '.';
+            } else {
+                c[i][j] = '.';
+            }
+        }
+    }
+
+    // 复制 c 到 a（用于 BFS）
+    for (int i = 1; i <= h; i++) {
+        for (int j = 1; j <= w; j++) {
+            a[i][j] = c[i][j];
+        }
+    }
+
+    head = tail = 0;
+    for (int i = 1; i <= h; i++) {
+        for (int j = 1; j <= w; j++) {
+            if (a[i][j] == '#') {
+                b[i][j] = 0;
+                qx[tail] = i;
+                qy[tail] = j;
+                tail++;
+            }
+        }
+    }
+
+    while (head < tail) {
+        int x = qx[head], y = qy[head];
+        head++;
+        for (int k = 0; k < 8; k++) {
+            int nx = x + dx[k], ny = y + dy[k];
+            if (nx < 1 || nx > h || ny < 1 || ny > w) continue;
+            if (b[nx][ny] != -1) continue;
+            b[nx][ny] = b[x][y] + 1;
+            qx[tail] = nx;
+            qy[tail] = ny;
+            tail++;
+        }
+    }
+
+    for (int i = 1; i <= h; i++) {
+        for (int j = 1; j <= w; j++) {
+            putchar((b[i][j] % 2 == 0) ? '#' : '.');
+        }
+        putchar('\n');
+    }
+
+    // 释放内存（可选）
+    for (int i = 1; i <= h; i++) {
+        free(a[i]);
+        free(c[i]);
+        free(b[i]);
+    }
+    free(a);
+    free(c);
+    free(b);
+    return 0;
+}
+```
+
 #### 补充证明
 
 如果你觉得我上面给出的证明太抽象，可以参考以下更形式化的证明：
@@ -832,7 +1183,7 @@ $x \times (10^{d} - 1) \equiv 0 \pmod{M}$
 
 即 $ x  = k \times M' , k \subseteq{R} \text{  且  } 1 \le x \le N$ ，满足条件的 $ x $ 的个数就是 $ \lfloor N / M' \rfloor $。
 
-所以我们枚举每一个可能的位数 $d$ ， $\text{贡献} =  (R - L + 1) \times \lfloor N / M' \rfloor $ ,其中 $ L = 10^{d-1} $ , $ R = \min(N, 10^d - 1) $ , $ l - R + 1$ 即为有多少个可能的 $d$ 位数。
+所以我们枚举每一个可能的位数 $d$ ， $\text{贡献} =  (R - L + 1) \times \lfloor N / M' \rfloor $ ,其中 $ L = 10^{d-1} $ , $ R = \min(N, 10^d - 1) $ , $ R - L + 1$ 即为有多少个可能的 $d$ 位数。
 
 ### 参考代码
 ```cpp
@@ -885,6 +1236,51 @@ int main() {
         }
 
         cout << ans << '\n';
+    }
+    return 0;
+}
+```
+
+### 参考代码（C）
+
+```c
+#include <stdio.h>
+
+#define MOD 998244353
+typedef unsigned long long ull;
+
+ull gcd(ull a, ull b) {
+    while (b) {
+        ull t = a % b;
+        a = b;
+        b = t;
+    }
+    return a;
+}
+
+int T;
+ull n, m;
+
+int main() {
+    scanf("%d", &T);
+    while (T--) {
+        scanf("%llu %llu", &n, &m);
+        ull ans = 0;
+        ull l = 1;
+        ull pow10 = 10 % m;
+        for (int d = 1; d <= 19; d++) {
+            if (l > n) break;
+            ull r = n < l * 10 - 1 ? n : l * 10 - 1;
+            ull sum = r - l + 1;        // d位数的个数
+            ull A = (pow10 - 1 + m) % m;
+            ull g = gcd(A, m);
+            ull m1 = m / g;
+            ull cnt = n / m1;
+            ans = (ans + (sum % MOD) * (cnt % MOD)) % MOD;
+            l *= 10;
+            pow10 = (pow10 * 10) % m;
+        }
+        printf("%llu\n", ans);
     }
     return 0;
 }
